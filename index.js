@@ -41,4 +41,13 @@ app.get('/applications/:applicationId', function(req,res) {
   }
 });
 
+app.get('/applications/:applicationId/logs', function(req,res) {
+  var app = applications[req.params.applicationId];
+  if (app) {
+    res.json(app.logger.entries);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 module.exports = app;
