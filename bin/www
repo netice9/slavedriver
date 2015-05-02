@@ -5,7 +5,10 @@ app = require('../index');
 // main.start();
 
 
-var server = app.listen(3456, function () {
+var port = parseInt(process.env.PORT) || 3456;
+
+
+var server = app.listen(port, function () {
 
   var host = server.address().address;
   var port = server.address().port;
