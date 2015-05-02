@@ -9,6 +9,18 @@
 $ npm install --save slavedriver
 ```
 
+## Options (ENV)
+
+All of the following options are optional. Setting them enables features
+like authentication and transport encryption.
+
+  PORT - Port to use for incomming HTTP(S) requests
+
+  AUTH_USERNAME - username to use for client authentication
+  AUTH_PASSWORD - password to use for client authentication
+
+  SSL_CERT - content of SSL certificate
+  SSL_KEY - content of the private key for the SSL certificate
 
 ## Usage
 
