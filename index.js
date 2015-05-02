@@ -32,4 +32,13 @@ app.get('/applications', function(req,res) {
   }));
 });
 
+app.get('/applications/:applicationId', function(req,res) {
+  var app = applications[req.params.applicationId];
+  if (app) {
+    res.json({state: app.machine.getMachineState()});
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 module.exports = app;
