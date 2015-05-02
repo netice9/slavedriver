@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-app = require('../index');
+var http = require('http');
 
-// main.start();
-
+var app = require('../index');
 
 var port = parseInt(process.env.PORT) || 3456;
 
 
-var server = app.listen(port, function () {
+var server = http.createServer(app).listen(port, function () {
 
   var host = server.address().address;
   var port = server.address().port;
