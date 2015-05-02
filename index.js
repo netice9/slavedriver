@@ -1,7 +1,4 @@
 'use strict';
-// module.exports = function (str) {
-//   console.log(str || 'Rainbow');
-// };
 
 var fs = require("fs");
 var application = require('./application');
@@ -25,7 +22,6 @@ app.put('/applications/:applicationName', bodyParser.json(), function(req, res) 
     containers: req.body,
     name: req.params.applicationName
   }
-  console.log('created: %j', applicationDescriptor);
   applications[req.params.applicationName] = application(applicationDescriptor);
   res.status(201).json({})
 });
