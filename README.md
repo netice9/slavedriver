@@ -3,11 +3,9 @@
 > The best module ever.
 
 
-## Install
+## Running
 
-```sh
-$ npm install --save slavedriver
-```
+  $ docker run -d -p 3456:3456 -v /var/run/docker.sock:/var/run/docker.sock netice9/slavedriver
 
 ## Options (ENV)
 
