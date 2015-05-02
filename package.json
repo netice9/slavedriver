@@ -1,0 +1,44 @@
+{
+  "name": "slavedriver",
+  "version": "0.0.0",
+  "description": "Application runner for Docker",
+  "author": {
+    "name": "Dragan Milic",
+    "email": "dragan@netice9.com"
+  },
+  "repository": "netice9/slavedriver",
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "docker-tug",
+    ""
+  ],
+  "dependencies": {
+    "async": "^0.9.0",
+    "basic-auth": "^1.0.0",
+    "body-parser": "^1.12.3",
+    "dateformat": "^1.0.11",
+    "dependency-graph": "^0.1.0",
+    "docker-tracker": "^0.3.0",
+    "dockerode": "^2.1.1",
+    "express": "^4.12.3",
+    "lodash": "^3.7.0",
+    "stately.js": "^1.2.0"
+  },
+  "devDependencies": {
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-cli": "^1.11.0",
+    "jshint-stylish": "^1.0.0",
+    "load-grunt-tasks": "^1.0.0",
+    "restler": "^3.2.2",
+    "time-grunt": "^1.0.0"
+  },
+  "scripts": {
+    "test": "grunt"
+  }
+}
