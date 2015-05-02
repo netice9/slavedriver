@@ -16,7 +16,9 @@ var app = express();
 
 var applications = {};
 
-app.use(auth('test', 'test', 'Slavedriver'));
+if (process.env.AUTH_USERNAME && process.env.AUTH_PASSWORD) {
+  app.use(auth(process.env.AUTH_USERNAME, process.env.AUTH_PASSWORD, 'Slavedriver'));
+}
 
 app.put('/applications/:applicationName', bodyParser.json(), function(req, res) {
   var applicationDescriptor = {
