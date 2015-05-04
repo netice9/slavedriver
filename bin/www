@@ -4,17 +4,29 @@ var http = require('http');
 var https = require('https');
 
 var app = require('../index');
+var fs = require('fs');
 
 var port = parseInt(process.env.PORT) || 3456;
 
 
+var sslCert, sslKey;
+
 if (process.env.SSL_CERT && process.env.SSL_KEY) {
- var server = https.createServer({key: process.env.SSL_KEY, cert: process.env.SSL_CERT}, app).listen(port, function () {
+  sslCert = process.env.SSL_CERT;
+  sslKey = process.env.SSL_KEY;
+} else if (process.env.SSL_CERT_FILE && process.env.SSL_KEY_FILE) {
+  sslCert = fs.readFileSync(process.env.SSL_CERT_FILE, "utf8");
+  sslKey = fs.readFileSync(process.env.SSL_KEY_FILE, "utf8");
+}
+
+
+if (sslCert && sslKey) {
+  var server = https.createServer({key: sslKey, cert: sslCert}, app).listen(port, function () {
 
     var host = server.address().address;
     var port = server.address().port;
 
-    console.log('Slavedriver listening at http://%s:%s', host, port);
+    console.log('Slavedriver listening at https://%s:%s', host, port);
 
   });
 } else {
