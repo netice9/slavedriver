@@ -25,7 +25,7 @@ function Logger() {
 function Application(config) {
 
 
-  var images = _.values(config.containers).map(function(container) { return container.image; });
+  var images = _.values(config.containers).map(function(container) { return [container.image, container.authconfig]; });
 
 
   var that = this;
@@ -76,10 +76,22 @@ function Application(config) {
 
     that.logger.info("fetching images");
 
-    async.each(images, function(image, callback) {
-      that.logger.info("pulling "+image);
-      docker.pull(image, callback);
-    }, function(err) {
+    async.each(images, function(imageAuth, callback) {
+      that.logger.info("pulling "+imageAuth[0]);
+
+      docker.pull(imageAuth[0], {authconfig: imageAuth[1]}, function(err, stream) {
+        if (err) {
+          return callback(err);
+        } else {
+          var onProgress = function(event) {
+            //...
+          }.bind(this);
+
+          docker.modem.followProgress(stream, callback, onProgress);
+      }
+
+      });
+    }, function(err, stream) {
       if (err) {
         that.logger.error(err);
         return this.setMachineState(this.SHUTTING_DOWN);
