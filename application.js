@@ -43,7 +43,16 @@ function Application(config) {
     containerConfig.volumes_from = (containerConfig.volumes_from || []).map(prefixApplicationName);
     containerConfig.links = (containerConfig.links || []).map(prefixApplicationName);
     var fileName = containerName + ".id";
-    this.containers[kv[0]]=new container.Container(containerName, containerConfig, fileName);
+
+
+    var c = new container.Container(containerName, containerConfig, fileName);
+
+    c.on('failure', function(operation, containerName, err) {
+      console.log("container %s error operation: %s: %j", containerName, operation, err);
+    });
+
+    this.containers[kv[0]] = c;
+
   }.bind(this));
 
 
@@ -58,8 +67,8 @@ function Application(config) {
       _.keys(config.containers).forEach(function(containerName){ graph.addNode(containerName); });
 
       _.pairs(config.containers).forEach(function(name, container) {
-          var deps = (container.links || []).map(function(link){return link.split(/:/)[0]});
-          deps.forEach(function(dep) { graph.addDependency(name, dep); });
+        var deps = (container.links || []).map(function(link){return link.split(/:/)[0]});
+        deps.forEach(function(dep) { graph.addDependency(name, dep); });
       });
 
       var overallOrder = graph.overallOrder();
