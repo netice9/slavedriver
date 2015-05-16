@@ -33,18 +33,22 @@ function Application(name) {
 
   this.applicationDir = "applications/"+name;
 
-
   var that = this;
 
   this.logger = new Logger();
 
   this.containers = {};
 
-  this.create = function(config) {
 
-  mkdirp.sync(this.applicationDir);
+  this.load = function() {
+    this.config = JSON.parse(fs.readFileSync(this.applicationDir+"/config.json", "utf8"));
+    this.start();
+  }
 
-  fs.writeFileSync(this.applicationDir+"/config.json", JSON.stringify(config, null, 2));
+
+  this.start = function() {
+
+    var config = this.config;
 
     var prefixApplicationName = function(name) {
       return this.name + "." + name;
@@ -55,7 +59,7 @@ function Application(name) {
       var containerConfig = JSON.parse(JSON.stringify(kv[1]));
       containerConfig.volumes_from = (containerConfig.volumes_from || []).map(prefixApplicationName);
       containerConfig.links = (containerConfig.links || []).map(prefixApplicationName);
-      var fileName = containerName + ".id";
+      var fileName = this.applicationDir+"/containers/"+containerName + ".id";
 
 
       var c = new container.Container(containerName, containerConfig, fileName);
@@ -86,7 +90,6 @@ function Application(name) {
 
         var overallOrder = graph.overallOrder();
 
-        // that.logger.info("start order: "+JSON.stringify(overallOrder));
         console.log("start order: "+JSON.stringify(overallOrder));
 
         async.eachSeries(overallOrder, function(containerName, cb2) {
@@ -94,7 +97,20 @@ function Application(name) {
         }.bind(this), cb);
       }.bind(this)
     ]);
-  }
+
+  };
+
+  this.create = function(config) {
+
+    mkdirp.sync(this.applicationDir);
+    mkdirp.sync(this.applicationDir+"/containers");
+    fs.writeFileSync(this.applicationDir+"/config.json", JSON.stringify(config, null, 2));
+
+    this.config = config;
+
+    this.start();
+
+  };
 }
 
 

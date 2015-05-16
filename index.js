@@ -7,7 +7,6 @@ var bodyParser = require('body-parser')
 var _ = require('lodash');
 var auth = require('./http-auth');
 
-var applicationsFile = "applications.json";
 var applications = {};
 var app = express();
 
@@ -51,5 +50,16 @@ app.get('/applications/:applicationId/logs', function(req,res) {
     res.sendStatus(404);
   }
 });
+
+if (! fs.existsSync("applications")) {
+  fs.mkdirSync("applications");
+} else {
+  fs.readdirSync("applications").forEach(function(applicationName) {
+    var app = application(applicationName);
+    applications[applicationName] = app;
+    app.load();
+  });
+}
+
 
 module.exports = app;
