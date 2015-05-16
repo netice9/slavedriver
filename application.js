@@ -31,11 +31,8 @@ function Application(name) {
 
   this.name = name;
 
-  // var applicationDir = "applications/"+config.name;
+  this.applicationDir = "applications/"+name;
 
-  // mkdir.sync(applicationDir);
-
-  // fs.writeFile
 
   var that = this;
 
@@ -44,6 +41,10 @@ function Application(name) {
   this.containers = {};
 
   this.create = function(config) {
+
+  mkdirp.sync(this.applicationDir);
+
+  fs.writeFileSync(this.applicationDir+"/config.json", JSON.stringify(config, null, 2));
 
     var prefixApplicationName = function(name) {
       return this.name + "." + name;
