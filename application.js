@@ -11,6 +11,7 @@ var events = require("events");
 var container = require("./container");
 var mkdirp = require('mkdirp');
 var fs = require('fs');
+var rmrf = require('rmrf');
 
 function Logger() {
 
@@ -88,11 +89,11 @@ function Application(name) {
           deps.forEach(function(dep) { graph.addDependency(name, dep); });
         });
 
-        var overallOrder = graph.overallOrder();
+        this.overallOrder = graph.overallOrder();
 
-        console.log("start order: "+JSON.stringify(overallOrder));
+        console.log("start order: "+JSON.stringify(this.overallOrder));
 
-        async.eachSeries(overallOrder, function(containerName, cb2) {
+        async.eachSeries(this.overallOrder, function(containerName, cb2) {
           this.containers[containerName].start(cb2);
         }.bind(this), cb);
       }.bind(this)
@@ -111,8 +112,21 @@ function Application(name) {
     this.start();
 
   };
-}
 
+
+  this.delete = function(callback) {
+    async.eachSeries(this.overallOrder, function(containerName, cb) {
+      this.containers[containerName].delete(cb);
+    }.bind(this), function(err) {
+      if (err) {
+        return callback(err);
+      }
+      rmrf(this.applicationDir);
+      callback();
+    }.bind(this));
+
+  }
+}
 
 module.exports = function(applicationConfig) {
   return new Application(applicationConfig);

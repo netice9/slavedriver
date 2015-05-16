@@ -15,6 +15,17 @@ function Container(name, config, fileName) {
   this.config = config;
   this.fileName = fileName;
 
+
+  this.delete = function(callback) {
+    var container = docker.getContainer(this.containerId);
+    container.remove({force: true}, function(err) {
+      if (err) {
+        return callback(err);
+      }
+      fs.unlink(this.fileName, callback);
+    }.bind(this));
+  }
+
   this.fetchImage = function(callback) {
 
     if (!callback) {

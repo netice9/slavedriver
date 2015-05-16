@@ -42,6 +42,22 @@ app.get('/applications/:applicationId', function(req,res) {
   }
 });
 
+
+app.delete('/applications/:applicationId', function(req,res) {
+  var app = applications[req.params.applicationId];
+  if (delete applications[req.params.applicationId]) {
+    app.delete(function(err) {
+      if (err) {
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(204);
+      }
+    });
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 app.get('/applications/:applicationId/logs', function(req,res) {
   var app = applications[req.params.applicationId];
   if (app) {
