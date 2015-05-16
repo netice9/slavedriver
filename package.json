@@ -25,6 +25,7 @@
     "dockerode": "^2.1.2",
     "express": "^4.12.3",
     "lodash": "^3.7.0",
+    "mkdirp": "^0.5.1",
     "stately.js": "^1.2.0"
   },
   "devDependencies": {

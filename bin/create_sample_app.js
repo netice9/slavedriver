@@ -25,7 +25,7 @@ rest.putJson('http://localhost:3456/applications/app1', {
     "volumes_from": ["pg"]
   },
 }).on('complete', function(data, response) {
-  if (response.statusCode == 200) {
+  if (response.statusCode == 201) {
     console.log('ok');
   } else {
     console.log('not ok %j', response.statusCode);

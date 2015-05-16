@@ -22,7 +22,9 @@ app.put('/applications/:applicationName', bodyParser.json(), function(req, res) 
     containers: req.body,
     name: req.params.applicationName
   }
-  applications[req.params.applicationName] = application(applicationDescriptor);
+  app = application(req.params.applicationName);
+  app.create(applicationDescriptor);
+  applications[req.params.applicationName] = app;
   res.status(201).json({})
 });
 
