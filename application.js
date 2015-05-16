@@ -47,6 +47,18 @@ function Application(name) {
   }
 
 
+  this.status = function() {
+    var status = {};
+    _.pairs(this.containers).forEach(function(kv) {
+      status[kv[0]]={
+        state: kv[1].state,
+        container_id: kv[1].containerId
+      };
+    });
+    return status;
+  }
+
+
   this.start = function() {
 
     var config = this.config;

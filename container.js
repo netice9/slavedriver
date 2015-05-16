@@ -16,6 +16,9 @@ function Container(name, config, fileName) {
   this.fileName = fileName;
 
 
+  this.state = "not running";
+
+
   this.delete = function(callback) {
     var container = docker.getContainer(this.containerId);
     container.remove({force: true}, function(err) {
@@ -32,6 +35,8 @@ function Container(name, config, fileName) {
       callback = function(){};
     }
 
+    this.state = "fetching image";
+
     async.series([
       function(cb) {
         fs.readFile(this.fileName, function(err, data) {
@@ -39,7 +44,7 @@ function Container(name, config, fileName) {
             this.containerId = null;
             console.log("no container id");
           } else {
-            this.containerId = data;
+            this.containerId = data.toString();
           }
           cb();
         }.bind(this));
@@ -98,7 +103,17 @@ function Container(name, config, fileName) {
           }.bind(this));
         }
       }.bind(this)
-    ], callback);
+    ],
+    function(err) {
+      if (!err) {
+        this.state = "fetch image failed";
+      } else {
+        this.state = "image fetched";
+      }
+
+      callback(err);
+
+    }.bind(this));
   }
 
 
@@ -108,6 +123,7 @@ function Container(name, config, fileName) {
       callback = function(){};
     }
 
+    this.state = "starting";
 
     async.series([
       function(cb) {
@@ -197,7 +213,14 @@ function Container(name, config, fileName) {
           }
         }.bind(this));
       }.bind(this)
-    ], callback);
+    ], function(err) {
+      if (err) {
+        this.state = "start failed";
+      } else {
+        this.state = "running";
+      }
+      callback(err);
+    }.bind(this));
   }
 
 }
