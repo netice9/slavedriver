@@ -50,22 +50,39 @@ function Container(name, config, fileName) {
         if (this.containerId) {
           cb();
         } else {
-          console.log("pulling");
-          docker.pull(config.image, {authconfig: config.authconfig}, function(err, stream) {
+          docker.listImages(function(err,data) {
             if (err) {
               this.emit('failure', 'fetchImage', this.name, err);
               cb(err);
             } else {
-              docker.modem.followProgress(stream, function(err) {
-                if (err) {
-                  this.emit('failure', 'fetchImage', this.name, err);
-                  cb(err);
-                } else {
-                  this.emit('imageFetched',this.name);
-                  cb();
-                }
-              }.bind(this), function(event) {
+              var tags = {}
+              data.forEach(function(image) {
+                (image.RepoTags || []).forEach(function(tag) {
+                  tags[tag] = true;
+                });
               });
+
+              if (!tags[config.image]) {
+                docker.pull(config.image, {authconfig: config.authconfig}, function(err, stream) {
+                  if (err) {
+                    this.emit('failure', 'fetchImage', this.name, err);
+                    cb(err);
+                  } else {
+                    docker.modem.followProgress(stream, function(err) {
+                      if (err) {
+                        this.emit('failure', 'fetchImage', this.name, err);
+                        cb(err);
+                      } else {
+                        this.emit('imageFetched',this.name);
+                        cb();
+                      }
+                    }.bind(this), function(event) {
+                    });
+                  }
+                }.bind(this));
+              } else {
+                cb();
+              }
             }
           }.bind(this));
         }
