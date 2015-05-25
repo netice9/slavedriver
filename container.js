@@ -135,6 +135,7 @@ function Container(name, config, fileName) {
           var environment = _.pairs(config.environment || {}).map(function(pair){return pair.join('=');});
 
           var volumesFrom = (config.volumes_from || []);
+          var volumes = config.volumes || [];
 
           var portBindings = {};
 
@@ -152,7 +153,7 @@ function Container(name, config, fileName) {
 
           var createContainerConfig = {
             name: name,
-            'Hostname': '',
+            'Hostname': config.hostname,
             'User': '',
             'AttachStdin': false,
             'AttachStdout': true,
@@ -166,6 +167,7 @@ function Container(name, config, fileName) {
             'Volumes': {},
 
             'HostConfig': {
+              'Binds': volumes,
               'PortBindings': portBindings,
               'Links': links,
               'VolumesFrom': volumesFrom,
