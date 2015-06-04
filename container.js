@@ -138,17 +138,20 @@ function Container(name, config, fileName) {
           var volumes = config.volumes || [];
 
           var portBindings = {};
+          var exposedPorts = {};
 
           _.pairs(config.tcp_port_bindings || {}).forEach(function(pair) {
             var key =  pair[0]+"/tcp"
             var value = [{"HostPort": pair[1]}]
             portBindings[key] = value;
+            exposedPorts[key] = {};
           });
 
           _.pairs(config.udp_port_bindings || {}).forEach(function(pair) {
             var key =  pair[0]+"/udp"
             var value = [{"HostPort": pair[1]}]
             portBindings[key] = value;
+            exposedPorts[key] = {};
           });
 
           var createContainerConfig = {
@@ -165,6 +168,7 @@ function Container(name, config, fileName) {
             'Cmd': config.command,
             'Image': config.image,
             'Volumes': {},
+            'ExposedPorts': exposedPorts,
 
             'HostConfig': {
               'Binds': volumes,
