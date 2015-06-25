@@ -96,14 +96,14 @@ function Application(name) {
         var graph = new DepGraph();
         _.keys(config.containers).forEach(function(containerName){ graph.addNode(containerName); });
 
-        _.pairs(config.containers).forEach(function(name, container) {
+        _.pairs(config.containers).forEach(function(p) {
+          var name = p[0];
+          var container = p[1];
           var deps = (container.links || []).map(function(link){return link.split(/:/)[0]});
           deps.forEach(function(dep) { graph.addDependency(name, dep); });
         });
 
         this.overallOrder = graph.overallOrder();
-
-        console.log("start order: "+JSON.stringify(this.overallOrder));
 
         async.eachSeries(this.overallOrder, function(containerName, cb2) {
           this.containers[containerName].start(cb2);
