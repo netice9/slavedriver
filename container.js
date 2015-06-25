@@ -130,7 +130,7 @@ function Container(name, config, fileName) {
 
         if (!this.containerId) {
 
-          var links = (config.links || []);
+          var links = (config.links || []).concat(config.external_links || []);
 
           var environment = _.pairs(config.environment || {}).map(function(pair){return pair.join('=');});
 
