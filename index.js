@@ -9,12 +9,70 @@ var auth = require('./http-auth');
 
 var applications = {};
 var app = express();
+var docker = require('./docker');
 
 var applications = {};
 
 if (process.env.AUTH_USERNAME && process.env.AUTH_PASSWORD) {
   app.use(auth(process.env.AUTH_USERNAME, process.env.AUTH_PASSWORD, 'Slavedriver'));
 }
+
+
+app.post('/build_and_push', function(req,res) {
+  var buildUsername = req.query.build_registry_username;
+  var buildPassword = req.query.build_registry_password;
+  var buildAuthConfig = null;
+  if (buildUsername && buildPassword) {
+    buildAuthConfig = {username: buildUsername, password: buildPassword}
+  }
+
+  var pushUsername = req.query.push_registry_username;
+  var pushPassword = req.query.push_registry_password;
+  var pushAuthConfig = null;
+  if (pushUsername && pushPassword) {
+    pushAuthConfig = {username: pushUsername, password: pushPassword}
+  }
+
+  var tag = req.query.tag;
+
+  var opts = {
+    t: tag,
+    nocache: true,
+    rm: true,
+    memory: req.query.memory,
+    memswap: req.query.memswap,
+    cpushares: req.query.cpushares,
+    cpusetcpus: req.query.cpusetcpus,
+    authconfig: buildAuthConfig
+  }
+
+  docker.buildImage(req, opts, function(err, stream) {
+    if (err) {
+      res.status(500).json({message: err.message, back: err.back});
+      return;
+    } else {
+      res.status(200);
+      stream.pipe(res,{end: false});
+      docker.modem.followProgress(stream, function onFinished(err, output) {
+        if (err) {
+          res.end();
+        } else  {
+          var image = docker.getImage(tag);
+          image.push({}, function(err, output) {
+            if (err) {
+              res.json({errorDetail: {"code": 127, message: err.back}, error: err.message});
+            } else {
+              output.pipe(res);
+            }
+          }, pushAuthConfig);
+        }
+      }, function onProgress() {});
+
+
+
+    }
+  }, buildAuthConfig);
+});
 
 app.put('/applications/:applicationName', bodyParser.json(), function(req, res) {
   var applicationDescriptor = {
