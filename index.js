@@ -48,9 +48,11 @@ app.post('/build_and_push', function(req,res) {
 
   docker.buildImage(req, opts, function(err, stream) {
     if (err) {
+      console.log("build failed %j",{message: err.message, back: err.back});
       res.status(500).json({message: err.message, back: err.back});
       return;
     } else {
+      console.log("building ...");
       res.status(200);
       stream.pipe(res,{end: false});
       docker.modem.followProgress(stream, function onFinished(err, output) {
