@@ -1,5 +1,5 @@
 'use strict';
-
+var morgan = require('morgan');
 var fs = require("fs");
 var application = require('./application');
 var express = require('express');
@@ -17,7 +17,7 @@ if (process.env.AUTH_USERNAME && process.env.AUTH_PASSWORD) {
   app.use(auth(process.env.AUTH_USERNAME, process.env.AUTH_PASSWORD, 'Slavedriver'));
 }
 
-
+app.use(morgan('combined'));
 app.post('/build_and_push', function(req,res) {
   var buildUsername = req.query.build_registry_username;
   var buildPassword = req.query.build_registry_password;
@@ -44,7 +44,11 @@ app.post('/build_and_push', function(req,res) {
     cpushares: req.query.cpushares,
     cpusetcpus: req.query.cpusetcpus,
     authconfig: buildAuthConfig
-  }
+  };
+
+  console.log("build opts: %j", opts)
+
+  req.pipe(fs.createWriteStream('/tmp/app.tar'));
 
   docker.buildImage(req, opts, function(err, stream) {
     if (err) {
@@ -56,13 +60,14 @@ app.post('/build_and_push', function(req,res) {
       res.status(200);
       stream.pipe(res,{end: false});
       docker.modem.followProgress(stream, function onFinished(err, output) {
+        console.log('build finished');
         if (err) {
           res.end();
         } else  {
           var image = docker.getImage(tag);
           image.push({}, function(err, output) {
             if (err) {
-              res.json({errorDetail: {"code": 127, message: err.back}, error: err.message});
+              res.write(JSON.stringify({errorDetail: {"code": 127, message: err.back}, error: err.message})+"\n");
             } else {
               output.pipe(res);
             }

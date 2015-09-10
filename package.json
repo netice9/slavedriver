@@ -27,7 +27,8 @@
     "lodash": "^3.7.0",
     "mkdirp": "^0.5.1",
     "rmrf": "^1.0.2",
-    "stately.js": "^1.2.0"
+    "stately.js": "^1.2.0",
+    "morgan": "~1.6.1"
   },
   "devDependencies": {
     "grunt-cli": "^0.1.13",
