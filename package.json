@@ -25,7 +25,7 @@
     "dockerode": "^2.2.1",
     "express": "^4.12.3",
     "lodash": "^3.7.0",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.0",
     "rmrf": "^1.0.2",
     "stately.js": "^1.2.0",
     "morgan": "~1.6.1"
