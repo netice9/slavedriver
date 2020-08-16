@@ -24,7 +24,7 @@
     "docker-tracker": "^0.3.0",
     "dockerode": "^2.2.1",
     "express": "^4.12.3",
-    "lodash": "^3.7.0",
+    "lodash": "^4.17.20",
     "mkdirp": "^0.5.1",
     "rmrf": "^1.0.2",
     "stately.js": "^1.2.0",
